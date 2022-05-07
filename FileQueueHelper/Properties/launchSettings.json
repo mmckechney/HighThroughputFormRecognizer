@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "FileQueueHelper": {
+      "commandName": "Project",
+      "commandLineArgs": "-s atkformsstorage -c incoming --sb atkservicebus -q atkformqueue"
+    }
+  }
+}
