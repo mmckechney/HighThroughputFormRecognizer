@@ -1,4 +1,4 @@
-#az login$appName
+#az login
 param
 (
 	[Parameter(Mandatory=$true)]
@@ -10,21 +10,21 @@ param
 )
 
 $apppNameLc = $appName.ToLower()
-$resourceGroupName ="rg-$appName-demo-$location-001"
-$serviceBusNs =  "svcb-$appName-demo-$location-001"
-$formStorageAcct = "stor$($apppNameLc)demo$($location)001"
-$funcStorageAcct = "stor$($apppNameLc)fdemo$($location)001"
-$managedIdentity =  "mgid-$appName-demo-$location-001"
-$formRecognizer =  "frmr-$appName-demo-$location-001"
-$vnet = "vnet-$appName-demo-$location-001"
-$subnet = "subn-$appName-demo-$location-001"
-$nsg =  "nsg-$appName-demo-$location-001"
-$funcsubnet = "subn-$appName-func-demo-$location-001"
-$funcAppPlan = "fplan-$appName-demo-$location-001"
-$funcProcess = "func-$($appName)Process-demo-$location-001"
-$funcMove = "func-$($appName)Mover-demo-$location-001"
-$funcQueue = "func-$($appName)Queue-demo-$location-001"
-$keyvault = "kv-$appName-demo-$location-001"
+$resourceGroupName ="rg-$appName-demo-$location"
+$serviceBusNs =  "sbns-$appName-demo-$location"
+$formStorageAcct = "stor$($apppNameLc)demo$($location)"
+$funcStorageAcct = "fstor$($apppNameLc)demo$($location)"
+$managedIdentity =  "mgid-$appName-demo-$location"
+$formRecognizer =  "frmr-$appName-demo-$location"
+$vnet = "vnet-$appName-demo-$location"
+$subnet = "subn-$appName-demo-$location"
+$nsg =  "nsg-$appName-demo-$location"
+$funcsubnet = "subn-$appName-func-demo-$location"
+$funcAppPlan = "fcnplan-$appName-demo-$location"
+$funcProcess = "fcn-$($appName)Process-demo-$location"
+$funcMove = "fcn-$($appName)Mover-demo-$location"
+$funcQueue = "fcn-$($appName)Queue-demo-$location"
+$keyvault = "kv-$appName-demo-$location"
 $formQueueName = "formqueue"
 $processedQueueName = "processedqueue"
  
