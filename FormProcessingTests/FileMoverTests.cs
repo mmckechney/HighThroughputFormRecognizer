@@ -16,7 +16,7 @@ namespace FormProcessingTests
         {
             var fpf = new FormProcessorFunction.Recognition();
             var uri = fpf.GetSourceFileUrl(fileName);
-            var result = await fpf.ProcessFormRecognition(uri);
+            var result = await fpf.ProcessFormRecognition(uri, 0);
             Assert.IsTrue(result.Length > 0, "Recognition result was empty!");
         }
     }

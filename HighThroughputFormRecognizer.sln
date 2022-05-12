@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProcessedFileMover", "Proce
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{CDECF2CB-0529-4609-9E57-4936BB491918}"
 	ProjectSection(SolutionItems) = preProject
-		BulkUpload.ps1 = BulkUpload.ps1
+		BulkUploadAndDuplicate.ps1 = BulkUploadAndDuplicate.ps1
 		deploy.ps1 = deploy.ps1
 	EndProjectSection
 EndProject

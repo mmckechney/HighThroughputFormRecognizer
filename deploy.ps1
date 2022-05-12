@@ -6,7 +6,9 @@ param
 	[Parameter(Mandatory=$true)]
 	[string] $location,
 	[Parameter(Mandatory=$true)]
-	[string] $myPublicIp
+	[string] $myPublicIp, 
+	[ValidateRange(1, 10)]
+	[int] $formRecognizerInstanceCount = 1
 )
 
 $apppNameLc = $appName.ToLower()
@@ -90,13 +92,23 @@ az storage account create --resource-group $resourceGroupName --name $funcStorag
 ###########################
 ## Form Recognizer
 ###########################
-Write-Host "Creating Formn Recognizer Account" -ForegroundColor DarkCyan
-az cognitiveservices account create --kind FormRecognizer --location $location --name $formRecognizer --resource-group $resourceGroupName --sku S0 -o table
-$recognizerKey =  az cognitiveservices account keys list --name $formRecognizer --resource-group $resourceGroupName -o tsv --query key1
-$recognizerEndpoint = az cognitiveservices account show --name $formRecognizer --resource-group $resourceGroupName -o tsv --query properties.endpoints.FormRecognizer
+$formRecoIds = [System.Collections.ArrayList]@()
+$recognizerKeys = [System.Collections.ArrayList]@()
+for($i = 0; $i -lt $formRecognizerInstanceCount; $i++)
+{ 
+	$formIndex = ($i+1).ToString().PadLeft(2, "0")
+	$recognizerInstanceName = "$($formRecognizer)$($formIndex)"
+	Write-Host "Creating Formn Recognizer Account instance $($formIndex)" -ForegroundColor DarkCyan
 
-az cognitiveservices account identity assign  --name $formRecognizer --resource-group $resourceGroupName 
-$formRecoId = az cognitiveservices account identity show --name $formRecognizer --resource-group $resourceGroupName -o tsv --query principalId
+	az cognitiveservices account create --kind FormRecognizer --location $location --name $recognizerInstanceName --resource-group $resourceGroupName --sku S0 -o table
+	$tmp = az cognitiveservices account keys list --name $recognizerInstanceName --resource-group $resourceGroupName -o tsv --query key1
+	$recognizerKeys.Add($tmp)
+	$recognizerEndpoint = az cognitiveservices account show --name $recognizerInstanceName --resource-group $resourceGroupName -o tsv --query properties.endpoints.FormRecognizer
+
+	az cognitiveservices account identity assign  --name $recognizerInstanceName --resource-group $resourceGroupName 
+	$tmp = az cognitiveservices account identity show --name $recognizerInstanceName --resource-group $resourceGroupName -o tsv --query principalId
+	$formRecoIds.Add($tmp)
+}
 
 ###########################
 ## Key vault
@@ -111,6 +123,16 @@ $currentUser = az account show -o tsv --query "user.name"
 $currentUserObjectId = az ad user show --id $currentUser -o tsv --query objectId
 az role assignment create --role "Key Vault Secrets Officer" --assignee $currentUserObjectId --scope $keyvaultId -o table
 
+
+Write-Host "Creating Key Vault references for Function Apps"
+$sbConnKvReference = "@Microsoft.KeyVault(SecretUri=$($keyVaultUri)secrets/SERVICE-BUS-CONNECTION/)"
+Write-Host $sbConnKvReference 
+
+$frEndpointKvReference = "@Microsoft.KeyVault(SecretUri=$($keyVaultUri)secrets/FORM-RECOGNIZER-ENDPOINT/)"
+Write-Host $frEndpointKvReference
+
+$frKeyKvReference = "@Microsoft.KeyVault(SecretUri=$($keyVaultUri)secrets/FORM-RECOGNIZER-KEY/)"
+Write-Host $frKeyKvReference 
 
 ###########################
 ## Function App plan
@@ -178,7 +200,10 @@ az role assignment create --role "Azure Service Bus Data Owner" --assignee $func
 az role assignment create --role "Key Vault Secrets User" --assignee $funcProcessId --scope $keyvaultId -o table
 
 Write-Host "Adding Role Assignments For Form Recognizer " -ForegroundColor DarkCyan
-az role assignment create --role "Storage Blob Data Reader" --assignee $formRecoId --scope $storageId -o table
+foreach($formRecoId in $formRecoIds)
+{
+	az role assignment create --role "Storage Blob Data Reader" --assignee $formRecoId --scope $storageId -o table
+}
 
 Write-Host "Adding Role Assignments For File Mover Function " -ForegroundColor DarkCyan
 az role assignment create --role "Storage Blob Data Contributor" --assignee $funcMoveId --scope $storageId  -o table
@@ -202,14 +227,13 @@ az role assignment create --role "Azure Service Bus Data Owner" --assignee $curr
 ###########################
 
 Write-Host "Adding Key Vault Secrets" -ForegroundColor DarkCyan
+$delimitedFrKeys = $recognizerKeys -join " "
+
 az keyvault secret set --name "SERVICE-BUS-CONNECTION" --value $sbConnString --vault $keyvault -o tsv --query name
-az keyvault secret set --name "FORM-RECOGNIZER-KEY" --value $recognizerKey --vault $keyvault -o tsv --query name
+az keyvault secret set --name "FORM-RECOGNIZER-KEY" --value $delimitedFrKeys --vault $keyvault -o tsv --query name
 az keyvault secret set --name "FORM-RECOGNIZER-ENDPOINT" --value $recognizerEndpoint --vault $keyvault -o tsv --query name
 az keyvault secret set --name "STORAGE-KEY" --value $storageKey --vault $keyvault -o tsv --query name
 
-$sbConnKvReference = "@Microsoft.KeyVault(SecretUri=$($keyVaultUri)secrets/SERVICE-BUS-CONNECTION/)"
-$frEndpointKvReference = "@Microsoft.KeyVault(SecretUri=$($keyVaultUri)secrets/FORM-RECOGNIZER-ENDPOINT/)"
-$frKeyKvReference = "@Microsoft.KeyVault(SecretUri=$($keyVaultUri)secrets/FORM-RECOGNIZER-KEY/)"
 
 ###########################
 ## Code Deployment

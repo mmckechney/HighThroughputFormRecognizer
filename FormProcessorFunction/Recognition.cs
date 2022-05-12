@@ -17,6 +17,7 @@ using Polly;
 using System.Net;
 using System.Threading;
 using System.Reflection.Metadata;
+using System.Linq;
 
 namespace FormProcessorFunction
 {
@@ -24,8 +25,7 @@ namespace FormProcessorFunction
     {
         private static ILogger logger;
         private static ServiceBusSender serviceBusProcessedSender = Settings.ServiceBusProcessedSenderClient;
-        private static AzureKeyCredential credential = new AzureKeyCredential(Settings.Key);
-        private static DocumentAnalysisClient formRecogClient = new DocumentAnalysisClient(new Uri(Settings.Endpoint), credential);
+        private static List<DocumentAnalysisClient> formRecogClients = Settings.FormRecognizerClients;
         private static BlobContainerClient outputContainerClient = Settings.OutputContainerClient;
         private static BlobContainerClient sourceContainerClient = Settings.SourceContainerClient;
         [ServiceBusAccount("SERVICE_BUS_CONNECTION")]
@@ -58,7 +58,7 @@ namespace FormProcessorFunction
         {
             
             var uri = GetSourceFileUrl(fileMessage.FileName);
-            var recogOutput = await ProcessFormRecognition(uri);
+            var recogOutput = await ProcessFormRecognition(uri, fileMessage.RecognizerIndex);
             if(string.IsNullOrWhiteSpace(recogOutput))
             {
                 logger.LogError($"Failed to get Form Recognizer output for file '{fileMessage.FileName}'. Stopping processing and abandoning message.");
@@ -88,12 +88,42 @@ namespace FormProcessorFunction
             var sourceBlob = Settings.SourceContainerClient.GetBlobClient(sourceFile);
             return sourceBlob.Uri;
         }
-        public async Task<string> ProcessFormRecognition(Uri fileUri)
+        private DocumentAnalysisClient GetFormRecognizerClient(int index)
+        {
+            try
+            {
+                int clientCount = formRecogClients.Count;
+                if (index < clientCount)
+                {
+                    return formRecogClients[index];
+                }
+                else
+                {
+                    int mod = index % clientCount;
+                    if (mod < clientCount)
+                    {
+                        return formRecogClients[mod];
+                    }
+                    else
+                    {
+                        return GetFormRecognizerClient(index - 1);
+                    }
+                }
+            }
+            catch
+            {
+                return formRecogClients.First();
+            }
+        }
+        public async Task<string> ProcessFormRecognition(Uri fileUri, int index)
         {
             Random jitterer = new Random();
             CancellationTokenSource source = new CancellationTokenSource();
             try
             {
+                var formRecogClient = GetFormRecognizerClient(index);
+ 
+
                 //Retry policy to back off if too many calls are made to the Form Recognizer
                 var retryPolicy = Policy.Handle<RequestFailedException>(e => e.Status == (int)HttpStatusCode.TooManyRequests)
                     .WaitAndRetryAsync(5, retryAttempt => TimeSpan.FromSeconds(retryAttempt++) + TimeSpan.FromMilliseconds(jitterer.Next(0, 1000)));

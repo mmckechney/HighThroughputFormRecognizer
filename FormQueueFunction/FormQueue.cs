@@ -44,6 +44,7 @@ namespace FormQueueFunction
                 var sbSender = Settings.ServiceBusSenderClient;
 
                 var blobList = containerClient.GetBlobsAsync(BlobTraits.Metadata);
+                int counter = 0;
                 await foreach (var blob in blobList)
                 {
                     if (cancelSource.IsCancellationRequested)
@@ -71,11 +72,13 @@ namespace FormQueueFunction
                         }
                     }
 
+                    if (counter > 9) counter = 0;
                     logger.LogDebug($"Found file  {blob.Name}");
-                    var sbMessage = new FileQueueMessage() { FileName = blob.Name, ContainerName = Settings.SourceContainerName }.AsMessage();
+                    var sbMessage = new FileQueueMessage() { FileName = blob.Name, ContainerName = Settings.SourceContainerName, RecognizerIndex = counter }.AsMessage();
                     await sbSender.SendMessageAsync(sbMessage);
                     logger.LogInformation($"Queued file {blob.Name} for processing");
                     fileCounter++;
+                    counter++;
 
                     metaDataTasks.Add(UpdateBlobMetaData(blob.Name, containerClient, "IsQueued", DateTime.UtcNow.ToString()));
 

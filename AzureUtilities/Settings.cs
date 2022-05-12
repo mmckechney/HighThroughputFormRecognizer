@@ -7,6 +7,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Azure.AI.FormRecognizer.DocumentAnalysis;
+using System.Collections.Generic;
+using Azure;
 
 namespace AzureUtilities
 {
@@ -21,7 +24,7 @@ namespace AzureUtilities
         private static ILogger<StorageHelper> storageLogger;
         private static ILogger<ServiceBusHelper> sblogger;
         private static string _endpoint = string.Empty;
-        private static string _key = string.Empty;
+        private static List<string> _keys = new List<string>();
         private static string _queueName = string.Empty;
         private static string _processedQueueName = string.Empty;
         private static string _sourceContainerName = string.Empty;
@@ -35,6 +38,8 @@ namespace AzureUtilities
         private static BlobContainerClient _outputContainerClient;
         private static ServiceBusSender _serviceBusSenderClient;
         private static ServiceBusSender _serviceBusProcessedSenderClient;
+        private static List<DocumentAnalysisClient> _formRecognizerClients = new List<DocumentAnalysisClient>();
+
         public static string Endpoint
         {
             get
@@ -46,15 +51,23 @@ namespace AzureUtilities
                 return _endpoint;
             }
         }
-        public static string Key
+        public static List<string> Keys
         {
             get
             {
-                if (string.IsNullOrWhiteSpace(_key))
+                if (_keys.Count == 0)
                 {
-                    _key = Environment.GetEnvironmentVariable("FORM_RECOGNIZER_KEY");
+                    var tmp = Environment.GetEnvironmentVariable("FORM_RECOGNIZER_KEY");
+                    if (!string.IsNullOrWhiteSpace(tmp))
+                    {
+                        _keys.AddRange(tmp.Split(' ', StringSplitOptions.RemoveEmptyEntries));
+                    }
+                    else
+                    {
+                        storageLogger.LogError("FORM_RECOGNIZER_KEY is empty");
+                    }
                 }
-                return _key;
+                return _keys;
             }
         }
         public static string QueueName
@@ -214,6 +227,23 @@ namespace AzureUtilities
                     _serviceBusProcessedSenderClient = new ServiceBusHelper(sblogger).CreateServiceBusSender(ServiceBusNameSpaceName, ProcessedQueueName);
                 }
                 return _serviceBusProcessedSenderClient;
+            }
+        }
+
+        public static List<DocumentAnalysisClient> FormRecognizerClients
+        {
+            get
+            {
+                if(_formRecognizerClients.Count == 0)
+                {
+                    foreach(var key in Keys)
+                    {
+                        var  credential = new AzureKeyCredential(key);
+                        var  formRecogClient = new DocumentAnalysisClient(new Uri(Settings.Endpoint), credential);
+                        _formRecognizerClients.Add(formRecogClient);
+                    }    
+                }
+                return _formRecognizerClients;
             }
         }
     }
