@@ -29,7 +29,7 @@ $funcQueue = "fcn-$($appName)Queue-demo-$location"
 $keyvault = "kv-$appName-demo-$location"
 $formQueueName = "formqueue"
 $processedQueueName = "processedqueue"
- 
+
 
 Write-Host "Creating Resource Group" -ForegroundColor DarkCyan
 az group create --name $resourceGroupName  --location $location -o table
@@ -242,8 +242,8 @@ az keyvault secret set --name "STORAGE-KEY" --value $storageKey --vault $keyvaul
 $scriptDir = Split-Path $script:MyInvocation.MyCommand.Path
 
 Write-Host "Deploying Form Procesor Function App" -ForegroundColor DarkCyan
-dotnet publish "FormProcessorFunction/"
-$source = $scriptDir + "/FormProcessorFunction/bin/Debug/net6.0/publish"
+dotnet publish "../FormProcessorFunction/"
+$source = Join-Path -Path $scriptDir -ChildPath "../FormProcessorFunction/bin/Debug/net6.0/publish"
 $zip = $scriptDir + "build.zip"
 if(Test-Path $zip) { Remove-Item $zip }
 [io.compression.zipfile]::CreateFromDirectory($source,$zip)
@@ -251,16 +251,16 @@ az webapp deploy --name $funcProcess --resource-group $resourceGroupName --src-p
 
 
 Write-Host "Deploying File Mover Function App" -ForegroundColor DarkCyan
-dotnet publish "ProcessedFileMover/"
-$source = $scriptDir + "/ProcessedFileMover/bin/Debug/net6.0/publish"
+dotnet publish "../ProcessedFileMover/"
+$source = Join-Path -Path $scriptDir -ChildPath "../ProcessedFileMover/bin/Debug/net6.0/publish"
 if(Test-Path $zip) { Remove-Item $zip }
 [io.compression.zipfile]::CreateFromDirectory($source,$zip)
 az webapp deploy --name $funcMove --resource-group $resourceGroupName --src-path $zip --type zip
 
 
 Write-Host "Deploying File Queue Function App" -ForegroundColor DarkCyan
-dotnet publish "FormQueueFunction/"
-$source = $scriptDir + "/FormQueueFunction/bin/Debug/net6.0/publish"
+dotnet publish "../FormQueueFunction/"
+$source = Join-Path -Path $scriptDir -ChildPath "../FormQueueFunction/bin/Debug/net6.0/publish"
 if(Test-Path $zip) { Remove-Item $zip }
 [io.compression.zipfile]::CreateFromDirectory($source,$zip)
 az webapp deploy --name $funcQueue --resource-group $resourceGroupName --src-path $zip --type zip
