@@ -2,6 +2,8 @@
 
 This repository is offered to demonstrate a set of resources that will allow you to leverage [Azure Form Recognizer](https://docs.microsoft.com/en-us/azure/applied-ai-services/form-recognizer/) for high throughput of processing documents stored in Azure Blob Storage.
 
+**IMPORTANT!** In addition to leveraging the solution below, it will also be beneficial to _request a transaction limit increase_ for your Form Recognizer Accounts. Instructions for how to do this can be found in the [Microsoft Form Recognizer Documentation](https://docs.microsoft.com/en-us/azure/applied-ai-services/form-recognizer/service-limits#increasing-transactions-per-second-request-limit)
+
 ## Features
 
 This solution leverages the following Azure services:

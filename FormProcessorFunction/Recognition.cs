@@ -146,7 +146,7 @@ namespace FormProcessorFunction
                 //Using this sleep vs. operation.WaitForCompletion() to avoid over loading the endpoint
                 do
                 {
-                    System.Threading.Thread.Sleep(500);
+                    System.Threading.Thread.Sleep(2000);
                     await retryPolicy.ExecuteAndCaptureAsync(async token =>
                     {
                         await operation.UpdateStatusAsync();
