@@ -16,13 +16,23 @@ This solution leverages the following Azure services:
 - **Form Recognizer** - the Azure Cognitive Services API that will perform the form recognition and processing.
 - Three **Azure Functions**
   - `FormQueue` - identifies the files in the `incoming` blob container and send a claim check message (containing the file name) to the `formqueue` queue
-  - `Recognizer` - processes the message in `formqueue` to Form Recognizer, then update Blob metadata as "processed" and create new message in `processedqueue` queue \
+  - `Recognition` - processes the message in `formqueue` to Form Recognizer, then update Blob metadata as "processed" and create new message in `processedqueue` queue \
     This function employs scale limiting and [Polly](https://github.com/App-vNext/Polly) retries with back off for Form Recognizer 429 (too many requests) replies to balance maximum throughput and overloading the API endpoint
   - `FileMover` - processes messages in the `processedqueue` to move files from `incomming` to `processed` blob containers
 
+### Multiple Form Recognizer endpoints
+
+To further allow for high throughput, the `Recognition` function can distribute form recognition between 1-10 separate accounts. This is managed by the `FormQueue` funtion adding a `RegognizerIndex` value of 0-9 when queueing the files for processing. 
+
+The recognizer will distribute the files to the appropriate account (regardless of the number of accounts actually provisioned). 
+
+To configure multiple accounts with the script below, add a value between 1-10 for the `-formRecognizerInstanceCount` (default is 1). To configure manually, you will need to add all of the Form Recognizer account keys to the Azure Key Vault's `FORM-RECOGNIZER-KEY` secret -- _space separated_
+
+_Assumption:_ all instances of the Form Recognizer share the same URL (eg: https://eastus.api.cognitive.microsoft.com/)
+
 ## Process Flow
 
-![Process flow](ProcessFlow.png "Process Flow")
+![Process flow](Images/ProcessFlow.png "Process Flow")
 
 ## Get Started
 
