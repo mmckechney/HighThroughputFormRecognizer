@@ -20,8 +20,7 @@
       "prefetchCount": 0,
       "transportType": "amqpWebSockets",
       "maxAutoLockRenewalDuration": "00:10:00",
-      "maxConcurrentCalls": 16,
-      "maxConcurrentSessions": 8
+      "maxConcurrentCalls": 32
 
     }
   }

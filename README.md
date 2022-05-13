@@ -2,6 +2,8 @@
 
 This repository is offered to demonstrate a set of resources that will allow you to leverage [Azure Form Recognizer](https://docs.microsoft.com/en-us/azure/applied-ai-services/form-recognizer/) for high throughput of processing documents stored in Azure Blob Storage.
 
+**IMPORTANT!** In addition to leveraging the solution below, it will also be beneficial to _request a transaction limit increase_ for your Form Recognizer Accounts. Instructions for how to do this can be found in the [Microsoft Form Recognizer Documentation](https://docs.microsoft.com/en-us/azure/applied-ai-services/form-recognizer/service-limits#increasing-transactions-per-second-request-limit)
+
 ## Features
 
 This solution leverages the following Azure services:
@@ -16,13 +18,23 @@ This solution leverages the following Azure services:
 - **Form Recognizer** - the Azure Cognitive Services API that will perform the form recognition and processing.
 - Three **Azure Functions**
   - `FormQueue` - identifies the files in the `incoming` blob container and send a claim check message (containing the file name) to the `formqueue` queue
-  - `Recognizer` - processes the message in `formqueue` to Form Recognizer, then update Blob metadata as "processed" and create new message in `processedqueue` queue \
+  - `Recognition` - processes the message in `formqueue` to Form Recognizer, then update Blob metadata as "processed" and create new message in `processedqueue` queue \
     This function employs scale limiting and [Polly](https://github.com/App-vNext/Polly) retries with back off for Form Recognizer 429 (too many requests) replies to balance maximum throughput and overloading the API endpoint
   - `FileMover` - processes messages in the `processedqueue` to move files from `incomming` to `processed` blob containers
 
+### Multiple Form Recognizer endpoints
+
+To further allow for high throughput, the `Recognition` function can distribute form recognition between 1-10 separate Form Recognizer accounts. This is managed by the `FormQueue` funtion automatically adding a `RegognizerIndex` value of 0-9 when queueing the files for processing. 
+
+The recognizer will distribute the files to the appropriate account (regardless of the number of Form Recognizer accounts actually provisioned). 
+
+To configure multiple Form Recognizer accounts with the script below, add a value between 1-10 for the `-formRecognizerInstanceCount` (default is 1). To configure manually, you will need to add all of the Form Recognizer account keys to the Azure Key Vault's `FORM-RECOGNIZER-KEY` secret -- _space separated_
+
+_Assumption:_ all instances of the Form Recognizer share the same URL (such as: https://eastus.api.cognitive.microsoft.com/)
+
 ## Process Flow
 
-![Process flow](ProcessFlow.png "Process Flow")
+![Process flow](Images/ProcessFlow.png "Process Flow")
 
 ## Get Started
 
@@ -48,7 +60,7 @@ This will create all of the azure resources needed for the demonstration.
 
 To exercise the code and run the demo, follow these steps:
 
-1. Upload sample form file to the storage account's `incoming` container. To help with this, you can try the supplied PowerShell script [`BulkUploadAndDuplicate.ps1`](BulkUploadAndDuplicate.ps1). This script will take a directory of local files and upload them to the storage container. Then, based on your settings, duplicate them to help you easily create a large library of files to process
+1. Upload sample form file to the storage account's `incoming` container. To help with this, you can try the supplied PowerShell script [`BulkUploadAndDuplicate.ps1`](Scripts/BulkUploadAndDuplicate.ps1). This script will take a directory of local files and upload them to the storage container. Then, based on your settings, duplicate them to help you easily create a large library of files to process
 
     ```Powershell
     .\BulkUploadAndDuplicate.ps1 -path "<path to dir with sample file>" -storageAccountName "<storage account name>" --containerName "incoming" -counterStart 0 -duplicateCount 10

@@ -6,12 +6,13 @@
         "FORM_RECOGNIZER_SOURCE_CONTAINER_NAME": "incoming",
         "FORM_RECOGNIZER_PROCESSED_CONTAINER_NAME": "processed",
         "FORM_RECOGNIZER_OUTPUT_CONTAINER_NAME": "output",
-        "FORM_RECOGNIZER_STORAGE_ACCOUNT_NAME": "",
+        "FORM_RECOGNIZER_STORAGE_ACCOUNT_NAME": "storhtfr7demoeastus",
         "FORM_RECOGNIZER_MODEL_NAME": "prebuilt-document",
         "FORM_RECOGNIZER_ENDPOINT": "",
         "FORM_RECOGNIZER_KEY": "",
         "SERVICE_BUS_CONNECTION": "",
-        "SERVICE_BUS_PROCESSED_QUEUE_NAME": "processedqueue"
+        "SERVICE_BUS_PROCESSED_QUEUE_NAME": "processedqueue",
+        "SERVICE_BUS_NAMESPACE_NAME": ""
       }
     }
   }
