@@ -19,7 +19,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{CDEC
 		deploy.ps1 = deploy.ps1
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FormQueueFunction", "FormQueueFunction\FormQueueFunction.csproj", "{8C42A22B-B77C-4ED5-B52B-58293F4696D2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FormQueueFunction", "FormQueueFunction\FormQueueFunction.csproj", "{8C42A22B-B77C-4ED5-B52B-58293F4696D2}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{DF045F00-9739-4BA0-BAAD-974ACCA1F640}"
 	ProjectSection(SolutionItems) = preProject
