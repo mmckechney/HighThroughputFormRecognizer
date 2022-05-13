@@ -22,13 +22,13 @@ This solution leverages the following Azure services:
 
 ### Multiple Form Recognizer endpoints
 
-To further allow for high throughput, the `Recognition` function can distribute form recognition between 1-10 separate accounts. This is managed by the `FormQueue` funtion adding a `RegognizerIndex` value of 0-9 when queueing the files for processing. 
+To further allow for high throughput, the `Recognition` function can distribute form recognition between 1-10 separate Form Recognizer accounts. This is managed by the `FormQueue` funtion automatically adding a `RegognizerIndex` value of 0-9 when queueing the files for processing. 
 
-The recognizer will distribute the files to the appropriate account (regardless of the number of accounts actually provisioned). 
+The recognizer will distribute the files to the appropriate account (regardless of the number of Form Recognizer accounts actually provisioned). 
 
-To configure multiple accounts with the script below, add a value between 1-10 for the `-formRecognizerInstanceCount` (default is 1). To configure manually, you will need to add all of the Form Recognizer account keys to the Azure Key Vault's `FORM-RECOGNIZER-KEY` secret -- _space separated_
+To configure multiple Form Recognizer accounts with the script below, add a value between 1-10 for the `-formRecognizerInstanceCount` (default is 1). To configure manually, you will need to add all of the Form Recognizer account keys to the Azure Key Vault's `FORM-RECOGNIZER-KEY` secret -- _space separated_
 
-_Assumption:_ all instances of the Form Recognizer share the same URL (eg: https://eastus.api.cognitive.microsoft.com/)
+_Assumption:_ all instances of the Form Recognizer share the same URL (such as: https://eastus.api.cognitive.microsoft.com/)
 
 ## Process Flow
 
