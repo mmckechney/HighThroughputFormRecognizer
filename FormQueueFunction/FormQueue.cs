@@ -15,6 +15,7 @@ using System.Threading;
 using System.Collections.Generic;
 using Azure.Storage.Blobs;
 using System.Web.Http;
+using Azure.Messaging.ServiceBus;
 
 namespace FormQueueFunction
 {
@@ -31,6 +32,9 @@ namespace FormQueueFunction
             bool force = false;
             bool.TryParse(req.Query["force"], out force);
 
+            bool useRawFilesAsSource = false;
+            bool.TryParse(req.Query["useRawFiles"], out useRawFilesAsSource);
+
             DateTime queuedDate = DateTime.MinValue;
             DateTime.TryParse(req.Query["queuedDate"], out queuedDate);
 
@@ -40,8 +44,22 @@ namespace FormQueueFunction
 
             try
             {
-                var containerClient = Settings.SourceContainerClient;
-                var sbSender = Settings.ServiceBusSenderClient;
+                BlobContainerClient containerClient;
+                ServiceBusSender sbSender;
+                if (useRawFilesAsSource)
+                {
+                    containerClient = Settings.RawFilesContainerClient;
+                    sbSender = Settings.ServiceBusRawSenderClient;
+                    
+                }
+                else
+                {
+                    containerClient = Settings.SourceContainerClient;
+                    sbSender = Settings.ServiceBusSenderClient;
+                }
+                logger.LogInformation($"Using storage container '{containerClient.Name}' as files source.");
+                logger.LogInformation($"Sending messages to Service Bus Queue '{sbSender.EntityPath}'");
+
 
                 var blobList = containerClient.GetBlobsAsync(BlobTraits.Metadata);
                 int counter = 0;
@@ -74,9 +92,18 @@ namespace FormQueueFunction
 
                     if (counter > 9) counter = 0;
                     logger.LogDebug($"Found file  {blob.Name}");
-                    var sbMessage = new FileQueueMessage() { FileName = blob.Name, ContainerName = Settings.SourceContainerName, RecognizerIndex = counter }.AsMessage();
+                    ServiceBusMessage sbMessage;
+                    if (useRawFilesAsSource)
+                    {
+                        sbMessage = new ServiceBusMessage(blob.Name);
+                    }
+                    else
+                    {
+                        sbMessage = new FileQueueMessage() { FileName = blob.Name, ContainerName = containerClient.Name, RecognizerIndex = counter }.AsMessage();
+                    }
+                    
                     await sbSender.SendMessageAsync(sbMessage);
-                    logger.LogInformation($"Queued file {blob.Name} for processing");
+                    logger.LogInformation($"Queued file {blob.Name} for processing from storage container '{containerClient.Name}' ");
                     fileCounter++;
                     counter++;
 
@@ -102,7 +129,7 @@ namespace FormQueueFunction
             }
             catch(Exception exe)
             {
-                logger.LogError($"Failed to queue files: {exe.ToString}");
+                logger.LogError($"Failed to queue files: {exe.ToString()}");
                 return new ExceptionResult(exe, true);
             }
         }

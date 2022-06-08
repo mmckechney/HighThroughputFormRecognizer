@@ -17,7 +17,7 @@ This solution leverages the following Azure services:
   - `processedqueue` - this contains the messages for files that have been processed and need to be moved to the `processed` blob container
 - **Form Recognizer** - the Azure Cognitive Services API that will perform the form recognition and processing.
 - Three **Azure Functions**
-  - `FormQueue` - identifies the files in the `incoming` blob container and send a claim check message (containing the file name) to the `formqueue` queue
+  - `FormQueue` - identifies the files in the `incoming` blob container and send a claim check message (containing the file name) to the `formqueue` queue. If used in conjunction with the [PythonAIFunction](https://github.com/mmckechney/PythonAIFunction) by using the `useRawFiles=true` query string, it will instead identify files int he `rawfiles` container and send a claim check message to the `rawqueue` queue.
   - `Recognition` - processes the message in `formqueue` to Form Recognizer, then update Blob metadata as "processed" and create new message in `processedqueue` queue \
     This function employs scale limiting and [Polly](https://github.com/App-vNext/Polly) retries with back off for Form Recognizer 429 (too many requests) replies to balance maximum throughput and overloading the API endpoint
   - `FileMover` - processes messages in the `processedqueue` to move files from `incomming` to `processed` blob containers

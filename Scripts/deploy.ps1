@@ -47,6 +47,8 @@ az network vnet subnet update --name $subnet --resource-group $resourceGroupName
 Write-Host "Creating Function Subnet" -ForegroundColor DarkCyan
 az network vnet subnet create --resource-group $resourceGroupName --name $funcsubnet --vnet-name $vnet --address-prefixes 10.10.1.0/24 --network-security-group $nsg --delegations Microsoft.Web/serverFarms --service-endpoints Microsoft.Storage Microsoft.Web -o table
 
+
+
 ###########################
 ## Service Bus
 ###########################
@@ -183,7 +185,7 @@ Write-Host "Creating File Queue Function App VNET integration" -ForegroundColor 
 az functionapp vnet-integration add --name $funcQueue --resource-group $resourceGroupName --vnet $vnet --subnet $funcsubnet
 
 Write-Host "Updating File Queue Function App settings" -ForegroundColor DarkCyan
-az functionapp config appsettings set --name $funcQueue --resource-group $resourceGroupName -o none --settings "FORM_RECOGNIZER_SOURCE_CONTAINER_NAME=incoming" "FORM_RECOGNIZER_STORAGE_ACCOUNT_NAME=$formStorageAcct" "SERVICE_BUS_NAMESPACE_NAME=$serviceBusNs" "SERVICE_BUS_QUEUE_NAME=$formQueueName"
+az functionapp config appsettings set --name $funcQueue --resource-group $resourceGroupName -o none --settings "FORM_RECOGNIZER_SOURCE_CONTAINER_NAME=incoming" "FORM_RECOGNIZER_RAWFILES_CONTAINER_NAME=rawfiles" "FORM_RECOGNIZER_STORAGE_ACCOUNT_NAME=$formStorageAcct" "SERVICE_BUS_NAMESPACE_NAME=$serviceBusNs" "SERVICE_BUS_QUEUE_NAME=$formQueueName SERVICE_BUS_RAW_QUEUE_NAME=rawqueue"
 
 Write-Host "Assigning File Queue Function App managed identity" -ForegroundColor DarkCyan
 az functionapp identity assign --name $funcQueue --resource-group $resourceGroupName --identities [system] -o table

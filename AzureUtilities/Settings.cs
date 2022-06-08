@@ -26,17 +26,21 @@ namespace AzureUtilities
         private static string _endpoint = string.Empty;
         private static List<string> _keys = new List<string>();
         private static string _queueName = string.Empty;
+        private static string _rawQueueName = string.Empty;
         private static string _processedQueueName = string.Empty;
         private static string _sourceContainerName = string.Empty;
+        private static string _rawFilesContainerName = string.Empty;
         private static string _processedContainerName = string.Empty;
         private static string _outputContainerName = string.Empty;
         private static string _storageAccountName = string.Empty;
         private static string _documentProcessingModel = string.Empty;
         private static string _serviceBusNamespaceName = string.Empty;
         private static BlobContainerClient _sourceContainerClient;
+        private static BlobContainerClient _rawfilesContainerClient;
         private static BlobContainerClient _processedContainerClient;
         private static BlobContainerClient _outputContainerClient;
         private static ServiceBusSender _serviceBusSenderClient;
+        private static ServiceBusSender _serviceBusRawSenderClient;
         private static ServiceBusSender _serviceBusProcessedSenderClient;
         private static List<DocumentAnalysisClient> _formRecognizerClients = new List<DocumentAnalysisClient>();
 
@@ -82,6 +86,18 @@ namespace AzureUtilities
                 return _queueName;
             }
         }
+        public static string RawQueueName
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(_rawQueueName))
+                {
+                    _rawQueueName = Environment.GetEnvironmentVariable("SERVICE_BUS_RAW_QUEUE_NAME");
+                    if (string.IsNullOrEmpty(_rawQueueName)) sblogger.LogError("SERVICE_BUS_RAW_QUEUE_NAME setting is empty!");
+                }
+                return _rawQueueName;
+            }
+        }
         public static string ProcessedQueueName
         {
             get
@@ -104,6 +120,19 @@ namespace AzureUtilities
                     if (string.IsNullOrEmpty(_sourceContainerName)) storageLogger.LogError("FORM_RECOGNIZER_SOURCE_CONTAINER_NAME setting is empty!");
                 }
                 return _sourceContainerName;
+
+            }
+        }
+        public static string RawFilesContainerName
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(_rawFilesContainerName))
+                {
+                    _rawFilesContainerName = Environment.GetEnvironmentVariable("FORM_RECOGNIZER_RAWFILES_CONTAINER_NAME");
+                    if (string.IsNullOrEmpty(_rawFilesContainerName)) storageLogger.LogError("FORM_RECOGNIZER_RAWFILES_CONTAINER_NAME setting is empty!");
+                }
+                return _rawFilesContainerName;
 
             }
         }
@@ -184,6 +213,18 @@ namespace AzureUtilities
                 return _sourceContainerClient;
             }
         }
+        public static BlobContainerClient RawFilesContainerClient
+        {
+            get
+            {
+                if (_rawfilesContainerClient == null)
+                {
+
+                    _rawfilesContainerClient = new StorageHelper(storageLogger).CreateBlobContainerClient(RawFilesContainerName, StorageAccountName);
+                }
+                return _rawfilesContainerClient;
+            }
+        }
         public static BlobContainerClient ProcessedContainerClient
         {
             get
@@ -215,6 +256,18 @@ namespace AzureUtilities
                     _serviceBusSenderClient = new ServiceBusHelper(sblogger).CreateServiceBusSender(ServiceBusNameSpaceName, QueueName);
                 }
                 return _serviceBusSenderClient;
+            }
+        }
+
+        public static ServiceBusSender ServiceBusRawSenderClient
+        {
+            get
+            {
+                if (_serviceBusRawSenderClient == null)
+                {
+                    _serviceBusRawSenderClient = new ServiceBusHelper(sblogger).CreateServiceBusSender(ServiceBusNameSpaceName, RawQueueName);
+                }
+                return _serviceBusRawSenderClient;
             }
         }
 
