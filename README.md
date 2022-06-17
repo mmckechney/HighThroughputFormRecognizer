@@ -61,7 +61,9 @@ To try out the sample end-to-end process, you will need:
 
     ```
 
-This will create all of the azure resources needed for the demonstration.
+3. If you are also going to leverage the Python AI pre-processing, you will also need to run the [`deploy.ps1`](https://github.com/mmckechney/PythonAIFunction/blob/main/deploy.ps1) script from that solution with matching `-appName`, `-location`, and `-myPublicIp` parameters. 
+
+These scripts will create all of the Azure resources needed for the demonstration.
 
 ### Running a demonstration
 
