@@ -132,7 +132,7 @@ namespace FormProcessorFunction
 
                 var pollyResult = await retryPolicy.ExecuteAndCaptureAsync(async token =>
                 {
-                    operation = await formRecogClient.StartAnalyzeDocumentFromUriAsync(Settings.DocumentProcessingModel, fileUri);
+                    operation = await formRecogClient.AnalyzeDocumentFromUriAsync(Settings.DocumentProcessingModel, fileUri);
                 }, source.Token);
 
 
