@@ -8,11 +8,11 @@
         "FORM_RECOGNIZER_OUTPUT_CONTAINER_NAME": "output",
         "FORM_RECOGNIZER_STORAGE_ACCOUNT_NAME": "storhtfr7demoeastus",
         "FORM_RECOGNIZER_MODEL_NAME": "prebuilt-document",
-        "FORM_RECOGNIZER_ENDPOINT": "",
-        "FORM_RECOGNIZER_KEY": "",
-        "SERVICE_BUS_CONNECTION": "",
+        "FORM_RECOGNIZER_ENDPOINT": "https://eastus.api.cognitive.microsoft.com/",
+        "FORM_RECOGNIZER_KEY": "d82e3fb4bc5844338fce50d922eb85a2",
+        "SERVICE_BUS_CONNECTION": "Endpoint=sb://sbns-mwmtest-demo-eastus.servicebus.windows.net/;SharedAccessKeyName=FormProcessFuncRule;SharedAccessKey=B2DpK6lLxdcSre/3aPbPnDPJaYOzp2WL8+ASbDWqVXg=",
         "SERVICE_BUS_PROCESSED_QUEUE_NAME": "processedqueue",
-        "SERVICE_BUS_NAMESPACE_NAME": ""
+        "SERVICE_BUS_NAMESPACE_NAME": "sbns-mwmtest-demo-eastus"
       }
     }
   }
