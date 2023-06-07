@@ -81,12 +81,12 @@ if($funcDeployOnly -eq $false)
 	$storageKey =  az storage account keys list --account-name $formStorageAcct -o tsv --query [0].value
 	$storageId =  az storage account show --resource-group $resourceGroupName --name $formStorageAcct -o tsv --query id
 
+	Write-Host "Creating Storage Local IP Network Rules" -ForegroundColor DarkCyan
+	az storage account network-rule add  --account-name $formStorageAcct --ip-address $myPublicIp -o table
+
 	Write-Host "Creating Storage VNET Network Rules" -ForegroundColor DarkCyan
 	az storage account network-rule add  --account-name $formStorageAcct --vnet-name $vnet --subnet $funcsubnet -o table
 	az storage account network-rule add  --account-name $formStorageAcct --vnet-name $vnet --subnet $subnet -o table
-
-	Write-Host "Creating Storage Local IP Network Rules" -ForegroundColor DarkCyan
-	az storage account network-rule add  --account-name $formStorageAcct --ip-address $myPublicIp -o table
 
 	Write-Host "Creating Storage Containers" -ForegroundColor DarkCyan
 	az storage container create --name "incoming" --account-name $formStorageAcct --account-key $storageKey -o table

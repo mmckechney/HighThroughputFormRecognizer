@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -8,14 +8,14 @@
 
   <ItemGroup>
     <PackageReference Include="Azure.AI.FormRecognizer" Version="4.0.0" />
-    <PackageReference Include="Azure.Identity" Version="1.8.2" />
-    <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.12.0" />
-    <PackageReference Include="Azure.Security.KeyVault.Secrets" Version="4.4.0" />
-    <PackageReference Include="Azure.Storage.Blobs" Version="12.14.1" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.3" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="6.0.0" />
+    <PackageReference Include="Azure.Identity" Version="1.9.0" />
+    <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.15.0" />
+    <PackageReference Include="Azure.Security.KeyVault.Secrets" Version="4.5.0" />
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.16.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="7.0.0" />
   </ItemGroup>
 
 </Project>
