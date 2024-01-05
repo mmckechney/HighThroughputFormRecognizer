@@ -1,10 +1,10 @@
 # High Throughput Form Recognizer
 
-This repository is offered to demonstrate a set of resources that will allow you to leverage [Azure Form Recognizer](https://docs.microsoft.com/en-us/azure/applied-ai-services/form-recognizer/) for high throughput of processing documents stored in Azure Blob Storage. 
+This repository is offered to demonstrate a set of resources that will allow you to leverage [Azure AI Document Intelligence](https://learn.microsoft.com/en-us/azure/ai-services/document-intelligence/?view=doc-intel-4.0.0) for high throughput of processing documents stored in Azure Blob Storage. 
 
-If you have multi-page forms that you want to pre-process and trim the number of pages prior to running them through the [Azure Form Recognizer](https://docs.microsoft.com/en-us/azure/applied-ai-services/form-recognizer/), you can use this project on conjunction with a Python Function that will perform [Teseract OCR](https://pypi.org/project/pytesseract/) to select only specific pages based in identifying keywords. This function can be found at the [PythonAIFunction repository](https://github.com/mmckechney/PythonAIFunction).
+If you have multi-page forms that you want to pre-process and trim the number of pages prior to running them through the [Azure AI Document Intelligence](https://learn.microsoft.com/en-us/azure/ai-services/document-intelligence/?view=doc-intel-4.0.0), you can use this project on conjunction with a Python Function that will perform [Teseract OCR](https://pypi.org/project/pytesseract/) to select only specific pages based in identifying keywords. This function can be found at the [PythonAIFunction repository](https://github.com/mmckechney/PythonAIFunction).
 
-**IMPORTANT!** In addition to leveraging the solution below, it will also be beneficial to _request a transaction limit increase_ for your Form Recognizer Accounts. Instructions for how to do this can be found in the [Microsoft Form Recognizer Documentation](https://docs.microsoft.com/en-us/azure/applied-ai-services/form-recognizer/service-limits#increasing-transactions-per-second-request-limit)
+**IMPORTANT!** In addition to leveraging the solution below, it will also be beneficial to _request a transaction limit increase_ for your Form Recognizer Accounts. Instructions for how to do this can be found in the [Azure AI Document Intelligence Documentation](https://docs.microsoft.com/en-us/azure/applied-ai-services/form-recognizer/service-limits#increasing-transactions-per-second-request-limit)
 
 ## Features
 
@@ -74,7 +74,7 @@ To exercise the code and run the demo, follow these steps:
 1. Upload the samle form files to the storage account's `rawfiles` container. To help with this, you can try the supplied PowerShell script [`BulkUploadAndDuplicate.ps1`](Scripts/BulkUploadAndDuplicate.ps1). This script will take a directory of local files and upload them to the storage container. Then, based on your settings, duplicate them to help you easily create a large library of files to process
 
     ```Powershell
-        .\BulkUploadAndDuplicate.ps1 -path "<path to dir with sample file>" -storageAccountName "<storage account name>" --containerName "rawfiles" -counterStart 0 -duplicateCount 10
+        .\BulkUploadAndDuplicate.ps1 -path "<path to dir with sample file>" -storageAccountName "<storage account name>" -containerName "rawfiles" -counterStart 0 -duplicateCount 10
     ```
 
     The sample script above would would upload all of the files found in the `-path` directory, then create copies of them prefixed with 000000 through 000010. You can of course upload the files any way you see fit.
@@ -88,7 +88,7 @@ To exercise the code and run the demo, follow these steps:
 1. Upload sample form file to the storage account's `incoming` container. To help with this, you can try the supplied PowerShell script [`BulkUploadAndDuplicate.ps1`](Scripts/BulkUploadAndDuplicate.ps1). This script will take a directory of local files and upload them to the storage container. Then, based on your settings, duplicate them to help you easily create a large library of files to process
 
     ```Powershell
-    .\BulkUploadAndDuplicate.ps1 -path "<path to dir with sample file>" -storageAccountName "<storage account name>" --containerName "incoming" -counterStart 0 -duplicateCount 10
+    .\BulkUploadAndDuplicate.ps1 -path "<path to dir with sample file>" -storageAccountName "<storage account name>" -containerName "incoming" -counterStart 0 -duplicateCount 10
     ```
 
     The sample script above would would upload all of the files found in the `-path` directory, then create copies of them prefixed with 000000 through 000010. You can of course upload the files any way you see fit.

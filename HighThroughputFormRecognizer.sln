@@ -16,7 +16,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{CDECF2CB-0529-4609-9E57-4936BB491918}"
 	ProjectSection(SolutionItems) = preProject
 		Scripts\BulkUploadAndDuplicate.ps1 = Scripts\BulkUploadAndDuplicate.ps1
-		Scripts\deploy.ps1 = Scripts\deploy.ps1
+		infra\main.bicep = infra\main.bicep
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FormQueueFunction", "FormQueueFunction\FormQueueFunction.csproj", "{8C42A22B-B77C-4ED5-B52B-58293F4696D2}"
@@ -24,6 +24,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{DF045F00-9739-4BA0-BAAD-974ACCA1F640}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		deploy.ps1 = deploy.ps1
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{950B2665-0C0C-4AEF-8CDC-854EC57550A2}"

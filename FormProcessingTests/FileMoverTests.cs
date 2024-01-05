@@ -1,4 +1,6 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using FormProcessorFunction;
+using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +16,8 @@ namespace FormProcessingTests
         [DataTestMethod]
         public async Task TestMethod1(string fileName)
         {
-            var fpf = new FormProcessorFunction.Recognition();
+            var factory = LoggerFactory.Create(builder => builder.AddConsole());
+            var fpf = new FormProcessorFunction.Recognition(factory.CreateLogger<Recognition>());
             var uri = fpf.GetSourceFileUrl(fileName);
             var result = await fpf.ProcessFormRecognition(uri, 0);
             Assert.IsTrue(result.Length > 0, "Recognition result was empty!");

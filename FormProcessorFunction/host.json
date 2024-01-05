@@ -9,19 +9,20 @@
     }
   },
   "extensions": {
-    "serviceBus": {
+   "serviceBus": {
       "clientRetryOptions": {
-        "mode": "exponential",
-        "tryTimeout": "00:01:00",
-        "delay": "00:00:00.80",
-        "maxDelay": "00:01:00",
-        "maxRetries": 3
+         "mode": "exponential",
+         "tryTimeout": "00:01:00",
+         "delay": "00:00:00.80",
+         "maxDelay": "00:01:00",
+         "maxRetries": 3
       },
       "prefetchCount": 0,
       "transportType": "amqpWebSockets",
       "maxAutoLockRenewalDuration": "00:10:00",
-      "maxConcurrentCalls": 32
+      "maxConcurrentCalls": 32,
+      "autoCompleteMessages": true
 
-    }
+   }
   }
 }
